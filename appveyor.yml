@@ -1,0 +1,19 @@
+environment:
+    global:
+        PROJECT_NAME: rustup-toolchain-install-master
+    matrix:
+        - TARGET: x86_64-pc-windows-msvc
+
+install:
+    - curl -sSf -o rustup-init.exe https://win.rustup.rs/
+    - rustup-init.exe -y --default-host %TARGET% --default-toolchain nightly
+    - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
+
+build: false
+
+test_script:
+    - cargo install --debug --force
+
+notifications:
+    - provider: Email
+      on_build_success: false
