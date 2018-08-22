@@ -6,13 +6,19 @@ environment:
 
 install:
     - curl -sSf -o rustup-init.exe https://win.rustup.rs/
-    - rustup-init.exe -y --default-host %TARGET% --default-toolchain nightly
+    - rustup-init.exe -y --default-host %TARGET% --default-toolchain stable
     - set PATH=%PATH%;C:\Users\appveyor\.cargo\bin
 
 build: false
 
 test_script:
     - cargo install --debug --force
+    - if defined GITHUB_TOKEN (
+        for /f %%i in ('rustup-toolchain-install-master --github-token "%GITHUB_TOKEN%"') do set RUST_COMMIT=%%i &&
+        echo %RUST_COMMIT% &&
+        rustc +"%RUST_COMMIT%" -vV &&
+        rustc +"%RUST_COMMIT%" -vV | findstr "%RUST_COMMIT%"
+      )
 
 notifications:
     - provider: Email
